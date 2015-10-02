@@ -1,6 +1,6 @@
 package com.github.elufimov.reusablerwd
 
-import java.io.{FileInputStream, ObjectInputStream, FileOutputStream, ObjectOutputStream}
+import java.io.{ FileInputStream, ObjectInputStream, FileOutputStream, ObjectOutputStream }
 import java.lang.reflect.Field
 import java.net.URL
 
