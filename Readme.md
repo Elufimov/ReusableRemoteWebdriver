@@ -5,6 +5,13 @@ It's a simple library for solving a single problem - loss of context on reloadin
 
 ## Install
 
+sbt
+
+```scala
+libraryDependencies ++= Seq(
+  "com.github.elufimov" % "reusableremotewebdriver_2.11" % version
+)
+```
 
 ## Using
 
