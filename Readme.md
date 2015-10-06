@@ -8,6 +8,8 @@ It's a simple library for solving a single problem - loss of context on reloadin
 sbt
 
 ```scala
+resolvers += Resolver.bintrayRepo("pathikrit", "maven")
+
 libraryDependencies ++= Seq(
   "com.github.elufimov" % "reusableremotewebdriver_2.11" % version
 )
