@@ -7,13 +7,20 @@ It's a simple library for solving a single problem - loss of context on reloadin
 
 sbt
 
-```scala
-resolvers += Resolver.bintrayRepo("pathikrit", "maven")
+`sbt`
 
+```scala
 libraryDependencies ++= Seq(
-  "com.github.elufimov" % "reusableremotewebdriver_2.11" % version
+  "com.github.elufimov" %% "reusableremotewebdriver" % "0.3"
 )
 ```
+
+`.gitignore`
+
+```
+session
+```
+
 
 ## Using
 
