@@ -5,8 +5,6 @@ It's a simple library for solving a single problem - loss of context on reloadin
 
 ## Install
 
-sbt
-
 `sbt`
 
 ```scala
@@ -45,12 +43,6 @@ It will create `session` folder with information on remote session
 ```scala
 val driver = ReusableRWD.loadSession()
 ```
-
-
-## Compile
-
-
-
 
 ## License
 The MIT License (MIT)
