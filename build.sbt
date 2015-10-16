@@ -2,7 +2,7 @@ import scalariform.formatter.preferences._
 
 name := "ReusableRemoteWebDriver"
 
-version := "0.2"
+version := "0.3"
 
 scalaVersion := "2.11.7"
 
@@ -13,8 +13,8 @@ scalariformPreferences := scalariformPreferences.value
   .setPreference(IndentPackageBlocks, true)
 
 libraryDependencies ++= Seq(
-  "org.seleniumhq.selenium" % "selenium-java" % "2.47.1",
-  "com.github.pathikrit" %% "better-files" % "2.8.1"
+  "org.seleniumhq.selenium" % "selenium-java" % "2.48.2",
+  "com.github.pathikrit" %% "better-files" % "2.13.0"
 )
 
 organization := "com.github.elufimov"
@@ -26,7 +26,7 @@ pomExtra in Global := {
     <licenses>
       <license>
         <name>MIT</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <url>https://opensource.org/licenses/MIT</url>
       </license>
     </licenses>
     <scm>
