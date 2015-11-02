@@ -31,14 +31,17 @@ object ReusableRWD {
   def initSession(url: URL, capabilities: DesiredCapabilities): RemoteWebDriver = {
     if (File(sessionDir).exists)
       File(sessionDir).delete(true)
-    if (!File(sessionDir).exists)
-      File(returnedCapabilitiesDir).createDirectories()
+    if (!File(sessionDir).exists) {
+      File(sessionDir).createIfNotExists(asDirectory = true)
+      File(returnedCapabilitiesDir).createIfNotExists(asDirectory = true)
+    }
 
     val driver = new RemoteWebDriver(url, capabilities)
 
     File(s"$sessionDir/id") < driver.getSessionId.toString
     File(s"$sessionDir/url") < url.toString
 
+    File(s"$sessionDir/desiredCapabilities").createIfNotExists(asDirectory = false)
     val desiredCapabilitiesOS = new ObjectOutputStream(new FileOutputStream(s"$sessionDir/desiredCapabilities"))
     desiredCapabilitiesOS.writeObject(capabilities)
     desiredCapabilitiesOS.close()
@@ -46,15 +49,16 @@ object ReusableRWD {
     val returnedCapabilities = driver.getClass.getDeclaredField("capabilities")
     returnedCapabilities.setAccessible(true)
     returnedCapabilities.get(driver).asInstanceOf[DesiredCapabilities].asMap().foreach { dc ⇒
+      File(s"$returnedCapabilitiesDir/${dc._1}").createIfNotExists(asDirectory = false)
       val os = new ObjectOutputStream(new FileOutputStream(s"$returnedCapabilitiesDir/${dc._1}"))
       try {
         os.writeObject(dc._2)
+        os.close()
       } catch {
         case e: NotSerializableException ⇒
           println(s"Can't serialize ${dc._1}")
+          os.close()
           File(s"$returnedCapabilitiesDir/${dc._1}").delete()
-      } finally {
-        os.close()
       }
     }
     driver
