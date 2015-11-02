@@ -9,7 +9,7 @@ It's a simple library for solving a single problem - loss of context on reloadin
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.github.elufimov" %% "reusableremotewebdriver" % "0.3"
+  "com.github.elufimov" %% "reusableremotewebdriver" % "0.3.1"
 )
 ```
 
