@@ -13,13 +13,6 @@ libraryDependencies ++= Seq(
 )
 ```
 
-`.gitignore`
-
-```
-session
-```
-
-
 ## Using
 
 * Start selenium hub and selenium node
@@ -36,7 +29,7 @@ cap.setBrowserName("firefox")
 ReusableRWD.initSession(new URL("http://localhost:4444/wd/hub"), cap)
 ```
 
-It will create `session` folder with information on remote session
+It will create `HOME/.reusableRemoteWebDriver/Current_Dir` folder with information on remote session
 
 * Restore session 
 

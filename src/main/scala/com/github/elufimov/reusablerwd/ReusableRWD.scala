@@ -1,10 +1,10 @@
 package com.github.elufimov.reusablerwd
 
-import java.io._
+import java.io.{ ObjectOutputStream, FileOutputStream, NotSerializableException, ObjectInputStream, FileInputStream }
 import java.lang.reflect.Field
 import java.net.URL
 
-import better.files.File
+import better.files._
 import org.openqa.selenium.Capabilities
 import org.openqa.selenium.remote._
 
@@ -25,32 +25,34 @@ class ReusableRWD(
 }
 
 object ReusableRWD {
-  private val sessionDir = "./session"
-  private val returnedCapabilitiesDir = s"$sessionDir/returnedCapabilities"
+  private val rwdHomeDir = s"${System.getProperty("user.home")}" / ".reusableRemoteWebDriver"
+  private val sessionDir = rwdHomeDir / File("").name
+  private val returnedCapabilitiesDir = sessionDir / "returnedCapabilities"
 
   def initSession(url: URL, capabilities: DesiredCapabilities): RemoteWebDriver = {
-    if (File(sessionDir).exists)
-      File(sessionDir).delete(true)
-    if (!File(sessionDir).exists) {
-      File(sessionDir).createIfNotExists(asDirectory = true)
-      File(returnedCapabilitiesDir).createIfNotExists(asDirectory = true)
+    rwdHomeDir.createIfNotExists(asDirectory = true)
+    if (sessionDir.exists)
+      sessionDir.delete(true)
+    if (!sessionDir.exists) {
+      sessionDir.createIfNotExists(asDirectory = true)
+      returnedCapabilitiesDir.createIfNotExists(asDirectory = true)
     }
 
     val driver = new RemoteWebDriver(url, capabilities)
 
-    File(s"$sessionDir/id") < driver.getSessionId.toString
-    File(s"$sessionDir/url") < url.toString
+    sessionDir / "id" < driver.getSessionId.toString
+    sessionDir / "url" < url.toString
 
-    File(s"$sessionDir/desiredCapabilities").createIfNotExists(asDirectory = false)
-    val desiredCapabilitiesOS = new ObjectOutputStream(new FileOutputStream(s"$sessionDir/desiredCapabilities"))
+    (sessionDir / "desiredCapabilities").createIfNotExists(asDirectory = false)
+    val desiredCapabilitiesOS = new ObjectOutputStream(new FileOutputStream((sessionDir / "desiredCapabilities").toJava))
     desiredCapabilitiesOS.writeObject(capabilities)
     desiredCapabilitiesOS.close()
 
     val returnedCapabilities = driver.getClass.getDeclaredField("capabilities")
     returnedCapabilities.setAccessible(true)
     returnedCapabilities.get(driver).asInstanceOf[DesiredCapabilities].asMap().foreach { dc ⇒
-      File(s"$returnedCapabilitiesDir/${dc._1}").createIfNotExists(asDirectory = false)
-      val os = new ObjectOutputStream(new FileOutputStream(s"$returnedCapabilitiesDir/${dc._1}"))
+      (returnedCapabilitiesDir / dc._1).createIfNotExists(asDirectory = false)
+      val os = new ObjectOutputStream(new FileOutputStream((returnedCapabilitiesDir / dc._1).toJava))
       try {
         os.writeObject(dc._2)
         os.close()
@@ -58,17 +60,17 @@ object ReusableRWD {
         case e: NotSerializableException ⇒
           println(s"Can't serialize ${dc._1}")
           os.close()
-          File(s"$returnedCapabilitiesDir/${dc._1}").delete()
+          (returnedCapabilitiesDir / dc._1).delete()
       }
     }
     driver
   }
 
   def loadSession(): RemoteWebDriver = {
-    val id = File(s"$sessionDir/id").contentAsString
-    val url = new URL(File(s"$sessionDir/url").contentAsString)
+    val id = (sessionDir / "id").contentAsString
+    val url = new URL((sessionDir / "url").contentAsString)
 
-    val desiredCapabilitiesIS = new ObjectInputStream(new FileInputStream(s"$sessionDir/desiredCapabilities"))
+    val desiredCapabilitiesIS = new ObjectInputStream(new FileInputStream((sessionDir / "desiredCapabilities").toJava))
     val desiredCapabilities = desiredCapabilitiesIS.readObject().asInstanceOf[DesiredCapabilities]
     desiredCapabilitiesIS.close()
 
@@ -80,8 +82,13 @@ object ReusableRWD {
 
     val returnedCapabilities = new DesiredCapabilities()
 
-    File(returnedCapabilitiesDir).children.foreach { file ⇒
-      returnedCapabilities.setCapability(file.name, new ObjectInputStream(new FileInputStream(s"$returnedCapabilitiesDir/${file.name}")).readObject())
+    returnedCapabilitiesDir.children.foreach { file ⇒
+      returnedCapabilities.setCapability(
+        file.name,
+        new ObjectInputStream(
+          new FileInputStream((returnedCapabilitiesDir / file.name).toJava)
+        ).readObject()
+      )
     }
     val returnedCapabilitiesField = driver.getClass.getSuperclass.getDeclaredField("capabilities")
     returnedCapabilitiesField.setAccessible(true)
