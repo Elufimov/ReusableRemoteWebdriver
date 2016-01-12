@@ -2,7 +2,7 @@ import scalariform.formatter.preferences._
 
 name := "ReusableRemoteWebDriver"
 
-version := "0.4"
+version := "0.5"
 
 scalaVersion := "2.11.7"
 
@@ -14,7 +14,7 @@ scalariformPreferences := scalariformPreferences.value
 
 libraryDependencies ++= Seq(
   "org.seleniumhq.selenium" % "selenium-java" % "2.48.2",
-  "com.github.pathikrit" %% "better-files" % "2.13.0"
+  "com.github.pathikrit" %% "better-files" % "2.14.0"
 )
 
 organization := "com.github.elufimov"

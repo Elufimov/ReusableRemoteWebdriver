@@ -9,7 +9,7 @@ It's a simple library for solving a single problem - loss of context on reloadin
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.github.elufimov" %% "reusableremotewebdriver" % "0.4"
+  "com.github.elufimov" %% "reusableremotewebdriver" % "0.5"
 )
 ```
 
@@ -26,15 +26,25 @@ import org.openqa.selenium.remote.DesiredCapabilities
 
 val cap = new DesiredCapabilities()
 cap.setBrowserName("firefox")
+// Will create `HOME/.reusableRemoteWebDriver/Current_Dir/default` and store serialized instance of Webdriver with browser name `firefox`
 ReusableRWD.initSession(new URL("http://localhost:4444/wd/hub"), cap)
+
+val capChrome = new DesiredCapabilities()
+capChrome.setBrowserName("chrome")
+// Will create `HOME/.reusableRemoteWebDriver/Current_Dir/ch` and store serialized instance of Webdriver with browser name `chrome`
+ReusableRWD.initSession(new URL("http://localhost:4444/wd/hub"), capChrome, "ch")
 ```
 
-It will create `HOME/.reusableRemoteWebDriver/Current_Dir` folder with information on remote session
+It will create `HOME/.reusableRemoteWebDriver/Current_Dir/tag` folder with information on remote session. For default tag is "default".
 
 * Restore session 
 
 ```scala
+//Will load `default` session
 val driver = ReusableRWD.loadSession()
+
+//Will load `ch` session
+val driver = ReusableRWD.loadSession("ch")
 ```
 
 ## License

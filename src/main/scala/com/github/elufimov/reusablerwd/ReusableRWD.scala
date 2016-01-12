@@ -25,14 +25,16 @@ class ReusableRWD(
 }
 
 object ReusableRWD {
-  private val rwdHomeDir = s"${System.getProperty("user.home")}" / ".reusableRemoteWebDriver"
-  private val sessionDir = rwdHomeDir / File("").name
-  private val returnedCapabilitiesDir = sessionDir / "returnedCapabilities"
 
-  def initSession(url: URL, capabilities: DesiredCapabilities): RemoteWebDriver = {
+  def initSession(url: URL, capabilities: DesiredCapabilities, tag: String = "default"): RemoteWebDriver = {
+
+    val rwdHomeDir = s"${System.getProperty("user.home")}" / ".reusableRemoteWebDriver"
+    val sessionDir = rwdHomeDir / File("").name / tag
+    val returnedCapabilitiesDir = sessionDir / "returnedCapabilities"
+
     rwdHomeDir.createIfNotExists(asDirectory = true)
     if (sessionDir.exists)
-      sessionDir.delete(true)
+      sessionDir.delete()
     if (!sessionDir.exists) {
       sessionDir.createIfNotExists(asDirectory = true)
       returnedCapabilitiesDir.createIfNotExists(asDirectory = true)
@@ -66,7 +68,12 @@ object ReusableRWD {
     driver
   }
 
-  def loadSession(): RemoteWebDriver = {
+  def loadSession(tag: String = "default"): RemoteWebDriver = {
+
+    val rwdHomeDir = s"${System.getProperty("user.home")}" / ".reusableRemoteWebDriver"
+    val sessionDir = rwdHomeDir / File("").name / tag
+    val returnedCapabilitiesDir = sessionDir / "returnedCapabilities"
+
     val id = (sessionDir / "id").contentAsString
     val url = new URL((sessionDir / "url").contentAsString)
 
